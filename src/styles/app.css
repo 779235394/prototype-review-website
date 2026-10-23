@@ -319,10 +319,6 @@ html.theme-ready.theme-changing {
   padding-block: 32px;
 }
 
-.site-footer-source {
-  max-width: none;
-}
-
 .site-footer nav {
   flex-wrap: wrap;
 }

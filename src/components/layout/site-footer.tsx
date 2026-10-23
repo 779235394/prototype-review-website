@@ -1,6 +1,6 @@
-import { siteConfig, sitePath } from "@/lib/site";
+import { sitePath } from "@/lib/site";
 
-/** 说明官网与评审应用的设备范围，并按实际公开状态展示源码入口。 */
+/** 说明官网与评审应用的设备范围，页尾仅提供使用与部署说明入口。 */
 export function SiteFooter() {
   return (
     <footer className="site-footer">
@@ -13,10 +13,6 @@ export function SiteFooter() {
           <a className="navigation-link" href={sitePath("guide/")}>使用说明</a>
           <a className="navigation-link" href={sitePath("deployment/")}>部署说明</a>
         </nav>
-        <div className="site-footer-source text-muted-foreground">
-          {siteConfig.source.state === "public" && <a className="navigation-link" href={siteConfig.source.websiteUrl}>查看官网源码</a>}
-          {siteConfig.source.state === "private" && <p>计划开源，源码与许可证将在公开时提供。</p>}
-        </div>
       </div>
     </footer>
   );

@@ -90,7 +90,7 @@ export const homeQuestions = [
   {
     id: "open-source",
     question: "这是开源项目吗？",
-    answer: "官网源码已公开，可以从页尾查看。评审前端与后端保持私有，整体开源许可证尚未确定。",
+    answer: "官网仓库已公开，评审前端与后端保持私有，整体开源许可证尚未确定。",
   },
 ] as const;
 
