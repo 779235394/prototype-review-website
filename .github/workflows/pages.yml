@@ -1,0 +1,105 @@
+name: 官网静态构建与发布
+
+on:
+  push:
+    branches:
+      - codex/initial-setup
+  pull_request:
+    branches:
+      - codex/initial-setup
+  workflow_dispatch:
+
+# 默认不授予权限，各任务分别声明所需能力。
+permissions: {}
+
+jobs:
+  build:
+    name: 编译官网静态页面
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: 限定手动发布分支
+        if: ${{ github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/codex/initial-setup' }}
+        shell: bash
+        run: |
+          printf '%s\n' '[原型评审台官网] 手动发布仅允许选择 codex/initial-setup 分支。' >&2
+          exit 1
+
+      - name: 获取官网源码
+        # 已确认的 v7.0.1，固定完整提交标识。
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - name: 设置固定运行环境
+        # 已确认的 v7.1.0，版本从本仓库文件读取。
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: 安装固定包管理工具
+        run: npm install --global npm@11.9.0
+
+      - name: 按锁文件安装依赖
+        run: npm ci
+
+      # 框架类型生成与构建共同使用生成目录，必须顺序执行。
+      - name: 编译页面类型
+        run: npm run typecheck
+
+      - name: 生成并整理静态产物
+        run: npm run build
+
+      - name: 上传官网发布产物
+        if: ${{ github.event_name != 'pull_request' }}
+        # 已确认的 v5.0.0，只上传官网的最终静态目录。
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
+        with:
+          name: github-pages
+          path: build/pages/
+          retention-days: 1
+          include-hidden-files: false
+
+  deploy:
+    name: 发布官网
+    needs: build
+    if: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/codex/initial-setup' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    # 构建可以独立进行，实际部署使用同一个并发组，不取消运行中的部署。
+    concurrency:
+      group: prototype-review-website-pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 读取已配置的站点
+        # 已确认的 v6.0.0；站点由维护时配置，流水线不自动启用或改变可见性。
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d
+        with:
+          enablement: false
+
+      - name: 部署静态产物
+        id: deployment
+        # 已确认的 v5.0.1，不发布合并请求预览。
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346
+        with:
+          artifact_name: github-pages
+
+      - name: 记录实际发布地址
+        shell: bash
+        env:
+          WEBSITE_PAGE_URL: ${{ steps.deployment.outputs.page_url }}
+        run: |
+          if [ -z "$WEBSITE_PAGE_URL" ]; then
+            printf '%s\n' '[原型评审台官网] 发布动作没有返回访问地址，请检查部署结果。' >&2
+            exit 1
+          fi
+          printf '### 官网发布结果\n\n' >> "$GITHUB_STEP_SUMMARY"
+          printf '访问地址：[%s](%s)\n' "$WEBSITE_PAGE_URL" "$WEBSITE_PAGE_URL" >> "$GITHUB_STEP_SUMMARY"

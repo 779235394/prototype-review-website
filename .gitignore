@@ -6,6 +6,8 @@ dist-ssr/
 .cache/
 coverage/
 *.tsbuildinfo
+build/
+.react-router/
 
 # 本机环境与私有配置，仅允许无真实凭据的示例文件。
 .local/
