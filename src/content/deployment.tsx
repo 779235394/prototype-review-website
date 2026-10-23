@@ -1,7 +1,7 @@
 import { CommandBlock } from "@/components/documents/command-block";
 import { DocumentNotice } from "@/components/documents/document-notice";
 import type { DocumentChapters } from "@/content/documents";
-import { sitePath } from "@/lib/site";
+import { canonicalUrl, sitePath } from "@/lib/site";
 
 /** 官网命令来自当前工程，业务部署只描述准备事项，不发布未实现的命令。 */
 export const deploymentChapters = [
@@ -39,7 +39,7 @@ export const deploymentChapters = [
         <p>站点配置集中在 <code>site.config.ts</code>，当前仓库子路径为 <code>/prototype-review-website/</code>。页面、资源、导航和规范地址共用该前缀，不能只修改链接或资源中的一部分。</p>
         <p>工程提供 <code>.github/workflows/pages.yml</code>，通过仓库的静态发布任务部署到 <code>GitHub Pages</code>。官网仓库公开，站点来源已设置为自动化发布，访问地址以成功部署后的任务结果为准。</p>
         <p>配置进入远程仓库后，推送到 <code>codex/initial-setup</code> 分支会在构建成功后发布；也可以从仓库的自动化任务入口选择该分支手动运行。指向该分支的合并请求只编译构建，不上传发布产物或部署站点；实际部署不会取消正在进行的部署。</p>
-        <DocumentNotice title="实际部署结果仍待交付"><p>发布配置不代表站点已经上线，访问地址以成功部署后的任务结果为准。只上传官网静态产物，不包含同级文档、评审前端、后端或本机配置。</p></DocumentNotice>
+        <DocumentNotice title="官网访问地址"><p>官网已发布，可访问<a href={canonicalUrl()}>原型评审台官网</a>。站点只包含官网静态产物，不包含同级文档、评审前端、后端或本机配置；评审应用仍在建设中。</p></DocumentNotice>
       </> },
     ],
   },
