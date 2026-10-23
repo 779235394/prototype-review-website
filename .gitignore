@@ -1,0 +1,23 @@
+# 依赖、构建产物与缓存。
+node_modules/
+dist/
+dist-ssr/
+.vite/
+.cache/
+coverage/
+*.tsbuildinfo
+
+# 本机环境与私有配置，仅允许无真实凭据的示例文件。
+.local/
+.env
+.env.*
+!.env.example
+*.local
+*.local.*
+
+# 编辑器、系统文件及日志。
+.idea/
+.vscode/
+.DS_Store
+logs/
+*.log
